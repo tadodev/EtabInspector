@@ -2,6 +2,7 @@ using EtabInspector.UI.Contracts.Services;
 using EtabInspector.UI.Contracts.Views;
 using EtabInspector.UI.Services;
 using EtabInspector.UI.ViewModels;
+using EtabInspector.UI.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Configuration;
@@ -44,6 +45,11 @@ public partial class App : Application
         services.AddTransient<ShellViewModel>();
         services.AddTransient<ModelDocumentViewModel>();
         services.AddTransient<DrawingDocumentViewModel>();
+
+        // Tool Window ViewModels
+        services.AddSingleton<ExplorerViewModel>();
+        services.AddSingleton<PropertiesViewModel>();
+        services.AddSingleton<OutputViewModel>();
     }
 
     private async void OnExit(object sender, ExitEventArgs e)

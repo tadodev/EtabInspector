@@ -10,8 +10,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using EtabInspector.UI.Contracts.Views;
+using EtabInspector.UI.ViewModels;
+using iNKORE.UI.WPF.Modern.Controls;
 
-namespace EtabInspector.UI.ViewModels
+namespace EtabInspector.UI.Views
 {
     /// <summary>
     /// Interaction logic for ShellWindow.xaml
@@ -25,28 +27,29 @@ namespace EtabInspector.UI.ViewModels
             InitializeComponent();
             _viewModel = viewModel;
             DataContext = viewModel;
-            
-            // Apply VS2013 Light Theme via reflection
-            ApplyVS2013Theme();
+
+            // Apply AvalonDock Dark Theme
+            ApplyAvalonDockTheme();
         }
 
-        private void ApplyVS2013Theme()
+        private void ApplyAvalonDockTheme()
         {
             try
             {
-                // Load the VS2013 theme assembly dynamically
                 var themeAssembly = System.Reflection.Assembly.Load("Dirkster.AvalonDock.Themes.VS2013");
-                var themeType = themeAssembly.GetType("Dirkster.AvalonDock.Themes.VS2013.VS2013LightTheme");
+                var themeType = themeAssembly.GetType("Dirkster.AvalonDock.Themes.VS2013.Vs2013DarkTheme");
                 if (themeType != null)
                 {
                     var themeInstance = Activator.CreateInstance(themeType);
-                    dockManager.Theme = themeInstance as dynamic;
+                    if (themeInstance != null)
+                    {
+                        dockManager.Theme = themeInstance as AvalonDock.Themes.Theme;
+                    }
                 }
             }
             catch (Exception ex)
             {
-                // If theme loading fails, continue without it
-                System.Diagnostics.Debug.WriteLine($"Failed to load VS2013 theme: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Failed to load VS2013 Dark theme: {ex.Message}");
             }
         }
 
@@ -59,7 +62,6 @@ namespace EtabInspector.UI.ViewModels
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
-            // Call shutdown on the view model to properly cleanup subscriptions
             _viewModel?.Shutdown();
         }
     }

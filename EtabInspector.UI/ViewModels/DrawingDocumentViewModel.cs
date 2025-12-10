@@ -5,10 +5,10 @@ namespace EtabInspector.UI.ViewModels;
 public partial class DrawingDocumentViewModel : DocumentViewModel
 {
     [ObservableProperty]
-    private string _drawingContent = "2D Drawing View - This is where your structural drawings will be displayed";
+    private string drawingContent = "2D Drawing View - This is where your structural drawings will be displayed";
 
     [ObservableProperty]
-    private double _scale = 1.0;
+    private double scale = 1.0;
 
     public DrawingDocumentViewModel()
     {

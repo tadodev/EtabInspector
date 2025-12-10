@@ -9,15 +9,27 @@ namespace EtabInspector.UI.ViewModels;
 
 public partial class ShellViewModel : ObservableObject
 {
-    private readonly IDocumentManagerService _documentManager;
-    private bool _isSubscribedToDocumentManager = false;
+    private readonly IDocumentManagerService documentManager;
+    private bool isSubscribedToDocumentManager = false;
+
+    // Documents
+    [ObservableProperty]
+    private ObservableCollection<DocumentViewModel> documents = new();
 
     [ObservableProperty]
-    private ObservableCollection<DocumentViewModel> _documents = new();
+    private DocumentViewModel? activeDocument;
+
+    // Tool Windows
+    [ObservableProperty]
+    private ExplorerViewModel explorer;
 
     [ObservableProperty]
-    private DocumentViewModel? _activeDocument;
+    private PropertiesViewModel properties;
 
+    [ObservableProperty]
+    private OutputViewModel output;
+
+    // Commands
     public ICommand NewModelCommand { get; }
     public ICommand NewDrawingCommand { get; }
     public ICommand CloseDocumentCommand { get; }
@@ -25,10 +37,21 @@ public partial class ShellViewModel : ObservableObject
     public ICommand ExitCommand { get; }
     public ICommand LoadedCommand { get; }
 
+    // View commands
+    public ICommand ToggleExplorerCommand { get; }
+    public ICommand TogglePropertiesCommand { get; }
+    public ICommand ToggleOutputCommand { get; }
+
     public ShellViewModel(IDocumentManagerService documentManager)
     {
-        _documentManager = documentManager;
+        this.documentManager = documentManager;
 
+        // Initialize tool windows
+        explorer = new ExplorerViewModel();
+        properties = new PropertiesViewModel();
+        output = new OutputViewModel();
+
+        // Document commands
         NewModelCommand = new RelayCommand(OnNewModel);
         NewDrawingCommand = new RelayCommand(OnNewDrawing);
         CloseDocumentCommand = new RelayCommand(OnCloseDocument, CanCloseDocument);
@@ -36,42 +59,47 @@ public partial class ShellViewModel : ObservableObject
         ExitCommand = new RelayCommand(OnExit);
         LoadedCommand = new RelayCommand(OnLoaded);
 
+        // View commands
+        ToggleExplorerCommand = new RelayCommand(() => Explorer.IsVisible = !Explorer.IsVisible);
+        TogglePropertiesCommand = new RelayCommand(() => Properties.IsVisible = !Properties.IsVisible);
+        ToggleOutputCommand = new RelayCommand(() => Output.IsVisible = !Output.IsVisible);
+
         // Subscribe to document manager events
         SubscribeToDocumentManager();
     }
 
     private void SubscribeToDocumentManager()
     {
-        if (!_isSubscribedToDocumentManager)
+        if (!isSubscribedToDocumentManager)
         {
-            _documentManager.DocumentAdded += OnDocumentAdded;
-            _documentManager.DocumentRemoved += OnDocumentRemoved;
-            _documentManager.ActiveDocumentChanged += OnActiveDocumentChanged;
-            _isSubscribedToDocumentManager = true;
+            documentManager.DocumentAdded += OnDocumentAdded;
+            documentManager.DocumentRemoved += OnDocumentRemoved;
+            documentManager.ActiveDocumentChanged += OnActiveDocumentChanged;
+            isSubscribedToDocumentManager = true;
         }
     }
 
     private void UnsubscribeFromDocumentManager()
     {
-        if (_isSubscribedToDocumentManager)
+        if (isSubscribedToDocumentManager)
         {
-            _documentManager.DocumentAdded -= OnDocumentAdded;
-            _documentManager.DocumentRemoved -= OnDocumentRemoved;
-            _documentManager.ActiveDocumentChanged -= OnActiveDocumentChanged;
-            _isSubscribedToDocumentManager = false;
+            documentManager.DocumentAdded -= OnDocumentAdded;
+            documentManager.DocumentRemoved -= OnDocumentRemoved;
+            documentManager.ActiveDocumentChanged -= OnActiveDocumentChanged;
+            isSubscribedToDocumentManager = false;
         }
     }
 
     private void OnLoaded()
     {
-        // Re-subscribe in case we got unloaded
         SubscribeToDocumentManager();
+        Output.AddLog("Application initialized");
     }
 
     public void Shutdown()
     {
-        // Call this method from the window close/shutdown handlers
         UnsubscribeFromDocumentManager();
+        Output.AddLog("Application shutting down");
     }
 
     private void OnNewModel()
@@ -80,7 +108,8 @@ public partial class ShellViewModel : ObservableObject
         {
             Title = $"Model {Documents.Count(d => d is ModelDocumentViewModel) + 1}"
         };
-        _documentManager.AddDocument(modelDoc);
+        documentManager.AddDocument(modelDoc);
+        Output.AddLog($"Created new model: {modelDoc.Title}");
     }
 
     private void OnNewDrawing()
@@ -89,7 +118,8 @@ public partial class ShellViewModel : ObservableObject
         {
             Title = $"Drawing {Documents.Count(d => d is DrawingDocumentViewModel) + 1}"
         };
-        _documentManager.AddDocument(drawingDoc);
+        documentManager.AddDocument(drawingDoc);
+        Output.AddLog($"Created new drawing: {drawingDoc.Title}");
     }
 
     private bool CanCloseDocument()
@@ -99,13 +129,15 @@ public partial class ShellViewModel : ObservableObject
     {
         if (ActiveDocument != null)
         {
-            _documentManager.CloseDocument(ActiveDocument);
+            Output.AddLog($"Closing document: {ActiveDocument.Title}");
+            documentManager.CloseDocument(ActiveDocument);
         }
     }
 
     private void OnCloseAllDocuments()
     {
-        _documentManager.CloseAllDocuments();
+        Output.AddLog("Closing all documents");
+        documentManager.CloseAllDocuments();
     }
 
     private void OnExit()
@@ -134,9 +166,9 @@ public partial class ShellViewModel : ObservableObject
 
     partial void OnActiveDocumentChanged(DocumentViewModel? value)
     {
-        if (_documentManager.ActiveDocument != value)
+        if (documentManager.ActiveDocument != value)
         {
-            _documentManager.ActiveDocument = value;
+            documentManager.ActiveDocument = value;
         }
         ((RelayCommand)CloseDocumentCommand).NotifyCanExecuteChanged();
     }

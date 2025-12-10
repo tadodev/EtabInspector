@@ -5,19 +5,19 @@ namespace EtabInspector.UI.ViewModels;
 public partial class DocumentViewModel : ObservableObject
 {
     [ObservableProperty]
-    private string _title = "Untitled";
+    private string title = "Untitled";
 
     [ObservableProperty]
-    private string _contentId = Guid.NewGuid().ToString();
+    private string contentId = Guid.NewGuid().ToString();
 
     [ObservableProperty]
-    private bool _isSelected;
+    private bool isSelected;
 
     [ObservableProperty]
-    private bool _isActive;
+    private bool isActive;
 
     [ObservableProperty]
-    private bool _canClose = true;
+    private bool canClose = true;
 
     public virtual void OnClose()
     {
