@@ -1,0 +1,22 @@
+<Application x:Class="EtabInspector.UI.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:EtabInspector.UI"
+             xmlns:helpers="clr-namespace:EtabInspector.UI.Helpers"
+             Startup="OnStartup"
+             Exit="OnExit">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- WPF Fluent Theme -->
+                <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" />
+
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Value Converters -->
+            <helpers:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
