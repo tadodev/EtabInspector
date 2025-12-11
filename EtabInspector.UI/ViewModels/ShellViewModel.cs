@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EtabInspector.UI.Contracts.Services;
+using EtabInspector.UI.Views;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -10,6 +11,8 @@ namespace EtabInspector.UI.ViewModels;
 public partial class ShellViewModel : ObservableObject
 {
     private readonly IDocumentManagerService documentManager;
+    private readonly SettingsViewModel settingsViewModel;
+
     private bool isSubscribedToDocumentManager = false;
 
     // Documents
@@ -29,8 +32,6 @@ public partial class ShellViewModel : ObservableObject
     [ObservableProperty]
     private OutputViewModel output;
 
-    [ObservableProperty] 
-    private SettingsViewModel settings;
 
     // Commands
     public ICommand NewModelCommand { get; }
@@ -44,7 +45,7 @@ public partial class ShellViewModel : ObservableObject
     public ICommand ToggleExplorerCommand { get; }
     public ICommand TogglePropertiesCommand { get; }
     public ICommand ToggleOutputCommand { get; }
-    public ICommand ToggleSettingsCommand { get; }
+    public ICommand OpenSettingsCommand { get; }
 
     public ShellViewModel(
         IDocumentManagerService documentManager,
@@ -54,12 +55,12 @@ public partial class ShellViewModel : ObservableObject
         SettingsViewModel settingsViewModel)
     {
         this.documentManager = documentManager;
+        this.settingsViewModel = settingsViewModel;
 
         // Initialize tool windows from DI
         explorer = explorerViewModel;
         properties = propertiesViewModel;
         output = outputViewModel;
-        settings = settingsViewModel;
 
         // Document commands
         NewModelCommand = new RelayCommand(OnNewModel);
@@ -73,7 +74,7 @@ public partial class ShellViewModel : ObservableObject
         ToggleExplorerCommand = new RelayCommand(() => Explorer.IsVisible = !Explorer.IsVisible);
         TogglePropertiesCommand = new RelayCommand(() => Properties.IsVisible = !Properties.IsVisible);
         ToggleOutputCommand = new RelayCommand(() => Output.IsVisible = !Output.IsVisible);
-        ToggleSettingsCommand = new RelayCommand(() => Settings.IsVisible = !Settings.IsVisible);
+        OpenSettingsCommand = new RelayCommand(OnOpenSettings);
 
         // Subscribe to document manager events
         SubscribeToDocumentManager();
@@ -105,6 +106,15 @@ public partial class ShellViewModel : ObservableObject
     {
         SubscribeToDocumentManager();
         Output.AddLog("Application initialized");
+    }
+
+    private void OnOpenSettings()
+    {
+        var settingsWindow = new SettingsWindow(settingsViewModel)
+        {
+            Owner = Application.Current.MainWindow
+        };
+        settingsWindow.ShowDialog();
     }
 
     public void Shutdown()

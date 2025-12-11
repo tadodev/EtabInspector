@@ -24,10 +24,7 @@ public class ThemeService : IThemeService
             {
                 if (window is Views.ShellWindow shellWindow)
                 {
-                    // Use reflection to call private method
-                    var method = shellWindow.GetType().GetMethod("ApplyAvalonDockTheme",
-                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                    method?.Invoke(shellWindow, null);
+                    shellWindow.ApplyAvalonDockTheme();
                 }
             }
         }));

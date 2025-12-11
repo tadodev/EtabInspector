@@ -1,3 +1,7 @@
+using EtabInspector.UI.Contracts.Views;
+using EtabInspector.UI.ViewModels;
+using iNKORE.UI.WPF.Modern;
+using iNKORE.UI.WPF.Modern.Controls;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,9 +13,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using EtabInspector.UI.Contracts.Views;
-using EtabInspector.UI.ViewModels;
-using iNKORE.UI.WPF.Modern.Controls;
 
 namespace EtabInspector.UI.Views
 {
@@ -38,43 +39,64 @@ namespace EtabInspector.UI.Views
         }
 
         /// <summary>
-        /// Applies the AvalonDock theme to match the current iNKORE theme
+        /// Sync AvalonDock VS2013 brushes to iNKORE app theme
         /// </summary>
-        private void ApplyAvalonDockTheme()
+        public void ApplyAvalonDockTheme()
         {
-            try
+            var useDark = ThemeManager.Current.ActualApplicationTheme == ApplicationTheme.Dark;
+            SetVs2013DockBrushes(useDark);
+        }
+
+        /// <summary>
+        /// Sets the VS2013 AvalonDock theme brushes based on light/dark mode
+        /// </summary>
+        private static void SetVs2013DockBrushes(bool useDark)
+        {
+            // Try different possible resource locations
+            var possibleUris = useDark
+                ? new[]
+                {
+                    "pack://application:,,,/Dirkster.AvalonDock.Themes.VS2013;component/DarkBrushs.xaml",
+                    "pack://application:,,,/Dirkster.AvalonDock.Themes.VS2013;component/Themes/DarkBrushs.xaml",
+                    "pack://application:,,,/AvalonDock.Themes.VS2013;component/DarkBrushs.xaml",
+                    "pack://application:,,,/AvalonDock.Themes.VS2013;component/Themes/DarkBrushs.xaml"
+                }
+                : new[]
+                {
+                    "pack://application:,,,/Dirkster.AvalonDock.Themes.VS2013;component/LightBrushs.xaml",
+                    "pack://application:,,,/Dirkster.AvalonDock.Themes.VS2013;component/Themes/LightBrushs.xaml",
+                    "pack://application:,,,/AvalonDock.Themes.VS2013;component/LightBrushs.xaml",
+                    "pack://application:,,,/AvalonDock.Themes.VS2013;component/Themes/LightBrushs.xaml"
+                };
+
+            // Remove any existing VS2013 brush dictionaries
+            var md = Application.Current.Resources.MergedDictionaries;
+            var existing = md.Where(d => d.Source != null &&
+                                         (d.Source.OriginalString.Contains("AvalonDock.Themes.VS2013") ||
+                                          d.Source.OriginalString.Contains("Dirkster.AvalonDock.Themes.VS2013")))
+                             .ToList();
+
+            foreach (var d in existing)
+                md.Remove(d);
+
+            // Try to load the theme with fallback options
+            foreach (var uriString in possibleUris)
             {
-                // Get current theme from iNKORE ThemeManager
-                var appTheme = iNKORE.UI.WPF.Modern.ThemeManager.Current.ActualApplicationTheme;
-
-                var themeAssembly = System.Reflection.Assembly.Load("Dirkster.AvalonDock.Themes.VS2013");
-                string themeTypeName;
-
-                // Match AvalonDock theme to iNKORE theme
-                if (appTheme == iNKORE.UI.WPF.Modern.ApplicationTheme.Dark)
+                try
                 {
-                    themeTypeName = "Dirkster.AvalonDock.Themes.VS2013.Vs2013DarkTheme";
+                    var uri = new Uri(uriString, UriKind.Absolute);
+                    var dictionary = new ResourceDictionary { Source = uri };
+                    md.Add(dictionary);
+                    System.Diagnostics.Debug.WriteLine($"Successfully loaded theme: {uriString}");
+                    return;
                 }
-                else
+                catch (Exception ex)
                 {
-                    themeTypeName = "Dirkster.AvalonDock.Themes.VS2013.Vs2013LightTheme";
-                }
-
-                var themeType = themeAssembly.GetType(themeTypeName);
-                if (themeType != null)
-                {
-                    var themeInstance = Activator.CreateInstance(themeType);
-                    if (themeInstance != null)
-                    {
-                        dockManager.Theme = themeInstance as AvalonDock.Themes.Theme;
-                    }
+                    System.Diagnostics.Debug.WriteLine($"Failed to load theme {uriString}: {ex.Message}");
                 }
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Failed to load AvalonDock theme: {ex.Message}");
-                // Continue without theme - AvalonDock will use default theme
-            }
+
+            System.Diagnostics.Debug.WriteLine("Warning: Could not load any AvalonDock theme resource");
         }
 
         public void ShowWindow() => Show();
