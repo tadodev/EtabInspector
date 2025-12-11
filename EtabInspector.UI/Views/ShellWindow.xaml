@@ -207,6 +207,16 @@
                                                        helpers:LayoutAnchorableBehavior.IsVisibleBinding="{Binding Properties.IsVisible, Mode=TwoWay}">
                                     <toolwindows:PropertiesView DataContext="{Binding Properties}"/>
                                 </xcadl:LayoutAnchorable>
+
+                                <!-- Settings Panel -->
+                                <xcadl:LayoutAnchorable Title="{Binding Settings.Title}"
+                                                        ContentId="{Binding Settings.ContentId}"
+                                                        CanClose="False"
+                                                        CanHide="True"
+                                                        helpers:LayoutAnchorableBehavior.IsVisibleBinding="{Binding Settings.IsVisible, Mode=TwoWay}">
+                                    <toolwindows:SettingsView DataContext="{Binding Settings}"/>
+                                </xcadl:LayoutAnchorable>
+
                             </xcadl:LayoutAnchorablePane>
                         </xcadl:LayoutAnchorablePaneGroup>
 
