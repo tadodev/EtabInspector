@@ -29,6 +29,9 @@ public partial class ShellViewModel : ObservableObject
     [ObservableProperty]
     private OutputViewModel output;
 
+    [ObservableProperty] 
+    private SettingsViewModel settings;
+
     // Commands
     public ICommand NewModelCommand { get; }
     public ICommand NewDrawingCommand { get; }
@@ -41,15 +44,22 @@ public partial class ShellViewModel : ObservableObject
     public ICommand ToggleExplorerCommand { get; }
     public ICommand TogglePropertiesCommand { get; }
     public ICommand ToggleOutputCommand { get; }
+    public ICommand ToggleSettingsCommand { get; }
 
-    public ShellViewModel(IDocumentManagerService documentManager)
+    public ShellViewModel(
+        IDocumentManagerService documentManager,
+        ExplorerViewModel explorerViewModel,
+        PropertiesViewModel propertiesViewModel,
+        OutputViewModel outputViewModel,
+        SettingsViewModel settingsViewModel)
     {
         this.documentManager = documentManager;
 
-        // Initialize tool windows
-        explorer = new ExplorerViewModel();
-        properties = new PropertiesViewModel();
-        output = new OutputViewModel();
+        // Initialize tool windows from DI
+        explorer = explorerViewModel;
+        properties = propertiesViewModel;
+        output = outputViewModel;
+        settings = settingsViewModel;
 
         // Document commands
         NewModelCommand = new RelayCommand(OnNewModel);
@@ -63,6 +73,7 @@ public partial class ShellViewModel : ObservableObject
         ToggleExplorerCommand = new RelayCommand(() => Explorer.IsVisible = !Explorer.IsVisible);
         TogglePropertiesCommand = new RelayCommand(() => Properties.IsVisible = !Properties.IsVisible);
         ToggleOutputCommand = new RelayCommand(() => Output.IsVisible = !Output.IsVisible);
+        ToggleSettingsCommand = new RelayCommand(() => Settings.IsVisible = !Settings.IsVisible);
 
         // Subscribe to document manager events
         SubscribeToDocumentManager();

@@ -37,6 +37,7 @@ public partial class App : Application
 
         // Services
         services.AddSingleton<IDocumentManagerService, DocumentManagerService>();
+        services.AddSingleton<IThemeService, ThemeService>();
 
         // Views
         services.AddTransient<IShellWindow, ShellWindow>();
@@ -50,6 +51,8 @@ public partial class App : Application
         services.AddSingleton<ExplorerViewModel>();
         services.AddSingleton<PropertiesViewModel>();
         services.AddSingleton<OutputViewModel>();
+        services.AddSingleton<SettingsViewModel>();
+
     }
 
     private async void OnExit(object sender, ExitEventArgs e)

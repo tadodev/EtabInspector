@@ -28,16 +28,39 @@ namespace EtabInspector.UI.Views
             _viewModel = viewModel;
             DataContext = viewModel;
 
-            // Apply AvalonDock Dark Theme
+            // Apply matching AvalonDock theme based on app theme
+            Loaded += OnWindowLoaded;
+        }
+
+        private void OnWindowLoaded(object sender, RoutedEventArgs e)
+        {
             ApplyAvalonDockTheme();
         }
 
+        /// <summary>
+        /// Applies the AvalonDock theme to match the current iNKORE theme
+        /// </summary>
         private void ApplyAvalonDockTheme()
         {
             try
             {
+                // Get current theme from iNKORE ThemeManager
+                var appTheme = iNKORE.UI.WPF.Modern.ThemeManager.Current.ActualApplicationTheme;
+
                 var themeAssembly = System.Reflection.Assembly.Load("Dirkster.AvalonDock.Themes.VS2013");
-                var themeType = themeAssembly.GetType("Dirkster.AvalonDock.Themes.VS2013.Vs2013DarkTheme");
+                string themeTypeName;
+
+                // Match AvalonDock theme to iNKORE theme
+                if (appTheme == iNKORE.UI.WPF.Modern.ApplicationTheme.Dark)
+                {
+                    themeTypeName = "Dirkster.AvalonDock.Themes.VS2013.Vs2013DarkTheme";
+                }
+                else
+                {
+                    themeTypeName = "Dirkster.AvalonDock.Themes.VS2013.Vs2013LightTheme";
+                }
+
+                var themeType = themeAssembly.GetType(themeTypeName);
                 if (themeType != null)
                 {
                     var themeInstance = Activator.CreateInstance(themeType);
@@ -49,7 +72,8 @@ namespace EtabInspector.UI.Views
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Failed to load VS2013 Dark theme: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Failed to load AvalonDock theme: {ex.Message}");
+                // Continue without theme - AvalonDock will use default theme
             }
         }
 
@@ -62,7 +86,11 @@ namespace EtabInspector.UI.Views
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
+
+            // Cleanup: Unsubscribe from events and dispose resources
             _viewModel?.Shutdown();
+
+            Loaded -= OnWindowLoaded;
         }
     }
 }

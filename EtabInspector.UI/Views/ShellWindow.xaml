@@ -12,8 +12,7 @@
         WindowStartupLocation="CenterScreen"
         Title="ETABS Inspector"
         Height="900" Width="1600"
-        Background="#F3F3F3"
-        Foreground="#333333">
+        ui:WindowHelper.UseModernWindowStyle="True">
 
     <Window.Resources>
         <!-- Document Templates -->
@@ -37,105 +36,104 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
-    <Grid RowDefinitions="Auto,Auto,*,Auto">
-        <!-- Custom Title Bar Area -->
-        <Border Grid.Row="0" Background="#FFFFFF" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Height="32">
-            <TextBlock Text="ETABS Inspector" 
-                       VerticalAlignment="Center" 
-                       Margin="16,0,0,0"
-                       FontSize="14" 
-                       FontWeight="SemiBold"
-                       Foreground="#333333"/>
-        </Border>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-        <!-- Modern Menu Bar -->
+        <!-- Menu Bar -->
+        <Menu Grid.Row="0" Padding="8,4">
+            <MenuItem Header="_File">
+                <MenuItem Header="New _Model" Command="{Binding NewModelCommand}" InputGestureText="Ctrl+N">
+                    <MenuItem.Icon>
+                        <ui:FontIcon Glyph="&#xE8F1;" FontSize="14"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="New _Drawing" Command="{Binding NewDrawingCommand}" InputGestureText="Ctrl+D">
+                    <MenuItem.Icon>
+                        <ui:FontIcon Glyph="&#xE70F;" FontSize="14"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="_Close Document" Command="{Binding CloseDocumentCommand}" InputGestureText="Ctrl+W"/>
+                <MenuItem Header="Close _All Documents" Command="{Binding CloseAllDocumentsCommand}"/>
+                <Separator/>
+                <MenuItem Header="_Settings" Command="{Binding ToggleSettingsCommand}">
+                    <MenuItem.Icon>
+                        <ui:FontIcon Glyph="&#xE713;" FontSize="14"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="E_xit" Command="{Binding ExitCommand}" InputGestureText="Alt+F4"/>
+            </MenuItem>
+            <MenuItem Header="_View">
+                <MenuItem Header="_Explorer" Command="{Binding ToggleExplorerCommand}" 
+                          IsCheckable="True" IsChecked="{Binding Explorer.IsVisible}">
+                    <MenuItem.Icon>
+                        <ui:FontIcon Glyph="&#xE8B7;" FontSize="14"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Properties" Command="{Binding TogglePropertiesCommand}"
+                          IsCheckable="True" IsChecked="{Binding Properties.IsVisible}">
+                    <MenuItem.Icon>
+                        <ui:FontIcon Glyph="&#xE8BC;" FontSize="14"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Output" Command="{Binding ToggleOutputCommand}"
+                          IsCheckable="True" IsChecked="{Binding Output.IsVisible}">
+                    <MenuItem.Icon>
+                        <ui:FontIcon Glyph="&#xE756;" FontSize="14"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Settings" Command="{Binding ToggleSettingsCommand}"
+                          IsCheckable="True" IsChecked="{Binding Settings.IsVisible}">
+                    <MenuItem.Icon>
+                        <ui:FontIcon Glyph="&#xE713;" FontSize="14"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="_Zoom In" InputGestureText="Ctrl++"/>
+                <MenuItem Header="Zoom _Out" InputGestureText="Ctrl+-"/>
+                <MenuItem Header="_Fit to Window" InputGestureText="Ctrl+0"/>
+            </MenuItem>
+            <MenuItem Header="_Tools">
+                <MenuItem Header="_Options"/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_Documentation"/>
+                <MenuItem Header="_About"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Toolbar -->
         <Border Grid.Row="1" 
-                Background="#FAFAFA"
-                BorderBrush="#E0E0E0"
-                BorderThickness="0,0,0,1">
-            <Menu Padding="8,4"
-                  Foreground="#333333">
-                <MenuItem Header="_File">
-                    <MenuItem Header="New _Model" Command="{Binding NewModelCommand}" InputGestureText="Ctrl+N">
-                        <MenuItem.Icon>
-                            <ui:FontIcon Glyph="&#xE72E;" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="New _Drawing" Command="{Binding NewDrawingCommand}" InputGestureText="Ctrl+D">
-                        <MenuItem.Icon>
-                            <ui:FontIcon Glyph="&#xE702;" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <Separator/>
-                    <MenuItem Header="_Close Document" Command="{Binding CloseDocumentCommand}" InputGestureText="Ctrl+W"/>
-                    <MenuItem Header="Close _All Documents" Command="{Binding CloseAllDocumentsCommand}"/>
-                    <Separator/>
-                    <MenuItem Header="E_xit" Command="{Binding ExitCommand}" InputGestureText="Alt+F4"/>
-                </MenuItem>
-                <MenuItem Header="_View">
-                    <MenuItem Header="_Explorer" Command="{Binding ToggleExplorerCommand}" 
-                              IsCheckable="True" IsChecked="{Binding Explorer.IsVisible}">
-                        <MenuItem.Icon>
-                            <ui:FontIcon Glyph="&#xE8B7;" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="_Properties" Command="{Binding TogglePropertiesCommand}"
-                              IsCheckable="True" IsChecked="{Binding Properties.IsVisible}">
-                        <MenuItem.Icon>
-                            <ui:FontIcon Glyph="&#xE8BC;" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="_Output" Command="{Binding ToggleOutputCommand}"
-                              IsCheckable="True" IsChecked="{Binding Output.IsVisible}">
-                        <MenuItem.Icon>
-                            <ui:FontIcon Glyph="&#xE756;" FontSize="14"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <Separator/>
-                    <MenuItem Header="_Zoom In" InputGestureText="Ctrl++"/>
-                    <MenuItem Header="Zoom _Out" InputGestureText="Ctrl+-"/>
-                    <MenuItem Header="_Fit to Window" InputGestureText="Ctrl+0"/>
-                </MenuItem>
-                <MenuItem Header="_Tools">
-                    <MenuItem Header="_Options"/>
-                </MenuItem>
-                <MenuItem Header="_Help">
-                    <MenuItem Header="_Documentation"/>
-                    <MenuItem Header="_About"/>
-                </MenuItem>
-            </Menu>
-        </Border>
-
-        <!-- Modern Toolbar -->
-        <Border Grid.Row="2" Grid.RowSpan="1"
-                VerticalAlignment="Top"
-                Background="#FAFAFA"
-                BorderBrush="#E0E0E0"
-                BorderThickness="0,0,0,1"
-                Padding="8,8">
+                BorderBrush="{DynamicResource SystemControlBackgroundBaseLowBrush}"
+                BorderThickness="0,1"
+                Padding="8">
             <StackPanel Orientation="Horizontal">
                 <Button Command="{Binding NewModelCommand}" 
-                        Padding="12,6" Margin="0,0,4,0"
-                        Background="#0078D4"
-                        Foreground="White">
+                           Style="{StaticResource AccentButtonStyle}"
+                           Padding="12,6" Margin="0,0,4,0">
                     <StackPanel Orientation="Horizontal">
-                        <ui:FontIcon Glyph="&#xE72E;" FontSize="14" Margin="0,0,6,0" Foreground="White"/>
+                        <ui:FontIcon Glyph="&#xE8F1;" FontSize="14" Margin="0,0,6,0"/>
                         <TextBlock Text="New Model"/>
                     </StackPanel>
                 </Button>
                 <Button Command="{Binding NewDrawingCommand}" 
-                        Padding="12,6" Margin="0,0,4,0"
-                        Background="#0078D4"
-                        Foreground="White">
+                           Style="{StaticResource AccentButtonStyle}"
+                           Padding="12,6" Margin="0,0,4,0">
                     <StackPanel Orientation="Horizontal">
-                        <ui:FontIcon Glyph="&#xE702;" FontSize="14" Margin="0,0,6,0" Foreground="White"/>
+                        <ui:FontIcon Glyph="&#xE70F;" FontSize="14" Margin="0,0,6,0"/>
                         <TextBlock Text="New Drawing"/>
                     </StackPanel>
                 </Button>
-                <Separator Width="1" Margin="8,0" Background="#CCCCCC"/>
+                <Border Width="1" Margin="8,4" 
+                        Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"/>
                 <Button Command="{Binding CloseDocumentCommand}" 
-                        Padding="12,6" Margin="0,0,4,0"
-                        Foreground="#333333">
+                           Padding="12,6" Margin="0,0,4,0">
                     <StackPanel Orientation="Horizontal">
                         <ui:FontIcon Glyph="&#xE711;" FontSize="14" Margin="0,0,6,0"/>
                         <TextBlock Text="Close"/>
@@ -145,12 +143,11 @@
         </Border>
 
         <!-- Main Content - AvalonDock -->
-        <Grid Grid.Row="2" Margin="0,48,0,0">
+        <Grid Grid.Row="2">
             <xcad:DockingManager x:Name="dockManager"
                                  DocumentsSource="{Binding Documents}"
                                  ActiveContent="{Binding ActiveDocument, Mode=TwoWay}"
-                                 LayoutItemTemplateSelector="{StaticResource DocumentTemplateSelector}"
-                                 Background="#F3F3F3">
+                                 LayoutItemTemplateSelector="{StaticResource DocumentTemplateSelector}">
 
                 <!-- Document Header Template -->
                 <xcad:DockingManager.DocumentHeaderTemplate>
@@ -158,8 +155,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding Title}" 
                                        Margin="8,0" 
-                                       VerticalAlignment="Center"
-                                       Foreground="#333333"/>
+                                       VerticalAlignment="Center"/>
                         </StackPanel>
                     </DataTemplate>
                 </xcad:DockingManager.DocumentHeaderTemplate>
@@ -219,44 +215,40 @@
             </xcad:DockingManager>
 
             <!-- Welcome Screen Overlay -->
-            <Border Background="#FAFAFA" 
-                    Visibility="{Binding Documents.Count, Converter={StaticResource CountToVisibilityConverter}}"
-                    Opacity="0.95">
+            <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}" 
+                    Visibility="{Binding Documents.Count, Converter={StaticResource CountToVisibilityConverter}}">
                 <Grid>
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                         <ui:FontIcon Glyph="&#xE8F1;" 
                                      FontSize="120" 
-                                     Foreground="#0078D4"/>
+                                     Foreground="{DynamicResource SystemControlForegroundAccentBrush}"/>
                         <TextBlock Text="ETABS Inspector" 
                                    FontSize="32" 
                                    FontWeight="SemiBold"
                                    HorizontalAlignment="Center" 
-                                   Margin="0,24,0,12"
-                                   Foreground="#333333"/>
+                                   Margin="0,24,0,12"/>
                         <TextBlock Text="Create a new document to get started" 
                                    FontSize="16" 
                                    HorizontalAlignment="Center" 
                                    Margin="0,0,0,40"
-                                   Foreground="#666666"/>
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
 
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <Button Command="{Binding NewModelCommand}" 
-                                    Padding="20,12" Margin="8,0"
-                                    Background="#0078D4"
-                                    Foreground="White">
-                                <StackPanel Orientation="Horizontal">
-                                    <ui:FontIcon Glyph="&#xE72E;" FontSize="32" Margin="0,0,12,0" Foreground="White"/>
-                                    <TextBlock Text="New Model" FontSize="14" VerticalAlignment="Center"/>
+                                       Style="{StaticResource AccentButtonStyle}"
+                                       Padding="24,16" Margin="8,0">
+                                <StackPanel>
+                                    <ui:FontIcon Glyph="&#xE8F1;" FontSize="48" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="New Model" FontSize="14" Margin="0,12,0,0" HorizontalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
 
                             <Button Command="{Binding NewDrawingCommand}" 
-                                    Padding="20,12" Margin="8,0"
-                                    Background="#0078D4"
-                                    Foreground="White">
-                                <StackPanel Orientation="Horizontal">
-                                    <ui:FontIcon Glyph="&#xE702;" FontSize="32" Margin="0,0,12,0" Foreground="White"/>
-                                    <TextBlock Text="New Drawing" FontSize="14" VerticalAlignment="Center"/>
+                                       Style="{StaticResource AccentButtonStyle}"
+                                       Padding="24,16" Margin="8,0">
+                                <StackPanel>
+                                    <ui:FontIcon Glyph="&#xE70F;" FontSize="48" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="New Drawing" FontSize="14" Margin="0,12,0,0" HorizontalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                         </StackPanel>
@@ -265,34 +257,28 @@
             </Border>
         </Grid>
 
-        <!-- Modern Status Bar -->
-        <Border Grid.Row="3" 
-                Background="#FAFAFA"
-                BorderBrush="#E0E0E0"
-                BorderThickness="0,1,0,0">
-            <StatusBar Padding="8,4"
-                       Foreground="#333333">
-                <StatusBarItem>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
-                        <ui:FontIcon Glyph="&#xE73E;" FontSize="13" Margin="0,0,6,0"/>
-                        <TextBlock Text="Ready" FontWeight="SemiBold"/>
-                    </StackPanel>
-                </StatusBarItem>
-                <Separator Width="1" Margin="0" Background="#CCCCCC"/>
-                <StatusBarItem>
-                    <StackPanel Orientation="Horizontal" Margin="8,0">
-                        <TextBlock Text="Active:" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding ActiveDocument.Title, FallbackValue='None'}" Margin="6,0,0,0"/>
-                    </StackPanel>
-                </StatusBarItem>
-                <Separator Width="1" Margin="0" Background="#CCCCCC"/>
-                <StatusBarItem HorizontalAlignment="Right">
-                    <StackPanel Orientation="Horizontal" Margin="8,0">
-                        <TextBlock Text="Documents:" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding Documents.Count}" Margin="6,0,0,0"/>
-                    </StackPanel>
-                </StatusBarItem>
-            </StatusBar>
-        </Border>
+        <!-- Status Bar -->
+        <StatusBar Grid.Row="3" Padding="8,4">
+            <StatusBarItem>
+                <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
+                    <ui:FontIcon Glyph="&#xE73E;" FontSize="13" Margin="0,0,6,0"/>
+                    <TextBlock Text="Ready" FontWeight="SemiBold"/>
+                </StackPanel>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <StackPanel Orientation="Horizontal" Margin="8,0">
+                    <TextBlock Text="Active:" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding ActiveDocument.Title, FallbackValue='None'}" Margin="6,0,0,0"/>
+                </StackPanel>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal" Margin="8,0">
+                    <TextBlock Text="Documents:" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding Documents.Count}" Margin="6,0,0,0"/>
+                </StackPanel>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>

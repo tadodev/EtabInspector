@@ -11,7 +11,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <!-- Inkore.UI.WPF.Modern Theme Resources -->
-                <ui:ThemeResources/>
+                <ui:ThemeResources RequestedTheme="Light"/>
                 <ui:XamlControlsResources/>
 
             </ResourceDictionary.MergedDictionaries>
